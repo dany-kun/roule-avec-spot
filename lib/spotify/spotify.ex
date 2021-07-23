@@ -11,6 +11,15 @@ defmodule Spotify do
   def find_track(query, opts \\ [limit: 5, remove_featuring: true]) do
     sanitized = sanitize_search(query, opts[:remove_featuring])
 
+    if sanitized do
+      get_track_uri(sanitized, query, opts)
+    else
+      IO.puts("Skipping #{query}")
+      nil
+    end
+  end
+
+  defp get_track_uri(sanitized, query, opts) do
     case get!("/search", query: [q: sanitized, type: "track"] ++ Keyword.take(opts, [:limit])) do
       %{status: 200, body: %{"tracks" => %{"items" => tracks}}} ->
         track =
@@ -114,7 +123,9 @@ defmodule Spotify do
         "Fat Joe samedi 2 say" => "Fat Joe safe 2 say",
         "Lil Jon The East Side Boyz  every freakin' night" => "Lil Jon every freakin' night",
         "Outkast southernplayerlisticadillacmuzik" => "Outkast southern",
-        "The notorious B.I.G. ten crack commandements" => "The notorious B.I.G. ten crack"
+        "The notorious B.I.G. ten crack commandements" => "The notorious B.I.G. ten crack",
+        "Warren G game don't wait remix" => "Warren G game don't wait",
+        "Warren G Let's get high" => nil
       },
       value,
       value

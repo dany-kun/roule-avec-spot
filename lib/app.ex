@@ -27,6 +27,7 @@ defmodule App do
 
     uris =
       Enum.map(tracks, fn track -> Spotify.find_track(track) end)
+      |> Enum.filter(fn track -> track end)
       |> Enum.group_by(fn e -> elem(e, 0) end, fn e -> elem(e, 1) end)
 
     %{uris: uris, link: link, title: title}
