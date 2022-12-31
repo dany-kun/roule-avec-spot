@@ -1,16 +1,18 @@
 defmodule App do
   @my_spotify_user_id Application.compile_env!(:roule_avec_spot, [Spotify, :user_id])
-  def main(video_id, playlist_name) do
+  def create_playlist(video_id, playlist_name) do
     details = get_track_uris(video_id)
 
-    results = details.uris
-    errors = results[:err]
-    if errors, do: raise(errors)
-
     uris =
-      results[:ok]
-      |> IO.inspect()
-      |> Enum.map(fn e -> e[:uri] end)
+      case details.uris do
+        %{err: err} ->
+          raise(err)
+
+        %{ok: uri_detailed} ->
+          uri_detailed
+          |> IO.inspect()
+          |> Enum.map(fn e -> e[:uri] end)
+      end
 
     create_playlist(playlist_name, uris, details)
   end
