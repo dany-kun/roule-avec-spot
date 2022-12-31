@@ -22,7 +22,7 @@ defmodule Youtube do
   end
 
   defp parse_description(description) do
-    [group | _] = Regex.run(~r/.*(1[-|.](?:.|\n)*)/, description)
+    [group | _] = Regex.run(~r/.*(1[-|.•](?:.|\n)*)/, description)
 
     group
     |> String.split("\n")
