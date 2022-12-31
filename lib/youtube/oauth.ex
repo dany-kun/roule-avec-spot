@@ -1,11 +1,16 @@
 defmodule Youtube.OAuth do
   use Tesla
 
-  @behaviour OAuth
+  @behaviour OAuth.AuthorizationCode
   @base_url "https://accounts.google.com/o/oauth2/v2/auth"
-  @client_id Application.compile_env!(:roule_avec_spot, [Youtube, :client_id])
-  @client_secret Application.compile_env!(:roule_avec_spot, [Youtube, :client_secret])
-  @redirect_uri Application.compile_env!(:roule_avec_spot, [Youtube, :redirect_uri])
+  @client_id Application.compile_env(:roule_avec_spot, [Youtube, :client_id])
+  @client_secret Application.compile_env(:roule_avec_spot, [Youtube, :client_secret])
+  @redirect_uri Application.compile_env(:roule_avec_spot, [Youtube, :redirect_uri])
+  @api_key Application.compile_env(:roule_avec_spot, [Youtube, :api_key])
+
+  def api_key() do
+    @api_key
+  end
 
   def get_token() do
     token = read_token()
@@ -15,7 +20,7 @@ defmodule Youtube.OAuth do
         token
 
       true ->
-        token = OAuth.create_access_token!(Youtube.OAuth)
+        token = OAuth.AuthorizationCode.create_access_token!(Youtube.OAuth)
         Application.put_env(:roule_avec_spot, :google_token, token)
         token
     end
@@ -25,7 +30,7 @@ defmodule Youtube.OAuth do
     Application.get_env(:roule_avec_spot, :google_token)
   end
 
-  @impl OAuth
+  @impl OAuth.AuthorizationCode
   def exchange_code!({:youtube, code}) do
     client =
       Tesla.client([
@@ -46,7 +51,7 @@ defmodule Youtube.OAuth do
     token
   end
 
-  @impl OAuth
+  @impl OAuth.AuthorizationCode
   def uri() do
     query =
       URI.encode_query(%{
@@ -62,10 +67,27 @@ defmodule Youtube.OAuth do
   defmodule Middleware do
     @behaviour Tesla.Middleware
 
+    @authorization_grant Application.compile_env(
+                           :roule_avec_spot,
+                           [Youtube, :authorization_grant],
+                           :code
+                         )
+
     def call(env, next, _) do
-      env
-      |> Map.update!(:headers, &[{"Authorization", "Bearer #{Youtube.OAuth.get_token()}"} | &1])
-      |> Tesla.run(next)
+      case @authorization_grant do
+        :api_key ->
+          env
+          |> Map.update!(:query, &[{"key", Youtube.OAuth.api_key()} | &1])
+          |> Tesla.run(next)
+
+        :code ->
+          env
+          |> Map.update!(
+            :headers,
+            &[{"Authorization", "Bearer #{Youtube.OAuth.get_token()}"} | &1]
+          )
+          |> Tesla.run(next)
+      end
     end
   end
 end

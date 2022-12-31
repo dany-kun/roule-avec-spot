@@ -1,4 +1,4 @@
-defmodule OAuth do
+defmodule OAuth.AuthorizationCode do
   @doc "Define the uri the user must log to"
   @callback uri :: String.t()
 

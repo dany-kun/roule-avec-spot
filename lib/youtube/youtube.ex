@@ -9,7 +9,12 @@ defmodule Youtube do
 
   def get_video_info(video_id) do
     %{status: 200, body: body} =
-      get!("/videos", query: [id: video_id, part: "snippet,contentDetails,statistics"])
+      get!("/videos",
+        query: [
+          id: video_id,
+          part: "snippet,contentDetails,statistics"
+        ]
+      )
 
     %{"items" => [%{"snippet" => snippet} | _]} = body
     %{"description" => description, "title" => title} = snippet
