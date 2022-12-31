@@ -94,9 +94,7 @@ defmodule Spotify do
       String.replace(query, ~r/(\s+)[fF](ea)?t(.)?(\s+)/, "\\1")
     end
     |> String.replace(~r/(\s+)&?(\s+)/, " ")
-    |> String.replace("\"", "")
-    |> String.replace("(", "")
-    |> String.replace(")", "")
+    |> String.replace(["\"", "(", ")"], "")
     |> String.trim()
     |> manual_fixes()
   end
