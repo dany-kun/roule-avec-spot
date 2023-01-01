@@ -1,6 +1,15 @@
 defmodule App do
   @my_spotify_user_id Application.compile_env!(:roule_avec_spot, [Spotify, :user_id])
-  def create_playlist(video_id, playlist_name) do
+  @channel_id Application.compile_env!(:roule_avec_spot, [Youtube, :channel_id])
+
+  def create_playlist(), do: create_playlist(@channel_id)
+
+  def create_playlist(channel_id) do
+    {:ok, video} = Youtube.get_channel_videos(channel_id)
+    create_playlist_from_video(video.video_id, nil)
+  end
+
+  def create_playlist_from_video(video_id, playlist_name) do
     details = get_track_uris(video_id)
 
     uris =
@@ -14,10 +23,10 @@ defmodule App do
           |> Enum.map(fn e -> e[:uri] end)
       end
 
-    create_playlist(playlist_name, uris, details)
+    create_playlist_from_uris(playlist_name, uris, details)
   end
 
-  def create_playlist(playlist_name, uris, info) do
+  def create_playlist_from_uris(playlist_name, uris, info) do
     id = Spotify.create_playlist(@my_spotify_user_id, playlist_name, info)
     # TODO: store in DB
     Spotify.update_playlist_tracks(id, uris)
