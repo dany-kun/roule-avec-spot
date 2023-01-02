@@ -1,0 +1,15 @@
+on: push
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    name: Compile project
+    steps:
+      - uses: actions/checkout@v2
+      - run: touch config/.secrets.exs
+      - uses: erlef/setup-beam@v1
+        with:
+          otp-version: '24'
+          elixir-version: '1.13.4'
+      - run: mix deps.get
+      - run: mix compile
