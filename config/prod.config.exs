@@ -10,4 +10,4 @@ config :roule_avec_spot, Spotify,
   client_secret: System.get_env("SPOTIFY_OAUTH_CLIENT_SECRET"),
   client_id: System.get_env("SPOTIFY_OAUTH_CLIENT_ID"),
   redirect_uri: System.get_env("SPOTIFY_OAUTH_CLIENT_REDIRECT_URI"),
-  redirect_uri: System.get_env("SPOTIFY_USER_ID")
+  user_id: System.get_env("SPOTIFY_USER_ID")
