@@ -15,7 +15,7 @@ defmodule OAuth do
 
   def access_token!(impl) do
     %{access_token: access_token} =
-      get_from_cache(fn cache -> cache[impl] end) || refresh_access_token!(impl) ||
+      OAuth.Cache.get(fn cache -> cache[impl] end) || refresh_access_token!(impl) ||
         oauth_tokens!(impl)
 
     access_token
@@ -23,7 +23,7 @@ defmodule OAuth do
 
   def refresh_access_token!(impl) do
     refresh_token =
-      get_from_cache(fn cache -> cache[impl] end) || impl.get_refresh_token_from_env()
+      OAuth.Cache.get(fn cache -> cache[impl] end) || impl.get_refresh_token_from_env()
 
     refresh_access_token!(impl, refresh_token)
   end
@@ -43,7 +43,7 @@ defmodule OAuth do
 
     tokens = %{access_token: access_token, refresh_token: refresh_token}
 
-    store_in_cache(fn cache -> Map.put(cache, impl, tokens) end)
+    OAuth.Cache.store(fn cache -> Map.put(cache, impl, tokens) end)
 
     tokens
   end
@@ -61,20 +61,35 @@ defmodule OAuth do
       _ -> receive_code()
     end
   end
+end
 
-  defp get_from_cache(get_fn) do
-    Agent.get(agent(), get_fn)
+defmodule OAuth.Cache do
+  use Agent
+
+  def start_link(initial_value) do
+    Agent.start_link(fn -> initial_value end, name: __MODULE__)
   end
 
-  defp store_in_cache(update_fn) do
-    Agent.update(agent(), update_fn)
+  def get(get_fn) do
+    Agent.get(__MODULE__, get_fn)
   end
 
-  # Use a local agent as a cache system
-  defp agent() do
-    case Agent.start_link(fn -> %{} end, name: __MODULE__) do
-      {:ok, pid} -> pid
-      {:error, {:already_started, pid}} -> pid
-    end
+  def store(update_fn) do
+    Agent.update(__MODULE__, update_fn)
+  end
+end
+
+defmodule OAuth.Cache.Application do
+  @moduledoc false
+
+  use Application
+
+  def start(_type, _args) do
+    children = [
+      {OAuth.Cache, %{}}
+    ]
+
+    opts = [strategy: :one_for_one, name: Bootstrap.Supervisor]
+    Supervisor.start_link(children, opts)
   end
 end

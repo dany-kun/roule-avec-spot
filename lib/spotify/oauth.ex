@@ -1,5 +1,4 @@
 defmodule Spotify.OAuth do
-  alias Spotify.OAuth
   use Tesla
 
   @behaviour OAuth
