@@ -6,7 +6,7 @@ defmodule App do
   def create_playlist(), do: create_playlist(@channel_id)
 
   def create_playlist(channel_id) do
-    {:ok, video} = Youtube.get_channel_videos(channel_id)
+    video = Youtube.get_channel_last_video(channel_id)
     create_playlist_from_video(video.video_id)
   end
 

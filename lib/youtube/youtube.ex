@@ -7,44 +7,42 @@ defmodule Youtube do
   plug(Tesla.Middleware.BaseUrl, @base_url)
   plug(Youtube.OAuth.Middleware)
 
-  def get_channel_videos(channel_id) do
-    %{status: 200, body: body} =
-      get!("/search",
-        query: [
-          channelId: channel_id,
-          order: "date",
-          type: "video",
-          part: "snippet"
-        ]
-      )
-
+  def get_channel_last_video(channel_id) do
+    %{status: 200, body: body} = fetch_videos(channel_id)
     %{"items" => items} = body
 
-    now = DateTime.utc_now()
+    videos =
+      Enum.map(items, fn item ->
+        %{
+          video_id: item["id"]["videoId"],
+          video_title: item["snippet"]["title"],
+          published_time: DateTime.from_iso8601(item["snippet"]["publishedAt"])
+        }
+      end)
+
     # Only keep videos published the last 6 days
-    find_last_videos(items, DateTime.add(now, -6 * 24 * 3600, :second)) |> last_video()
+    now = DateTime.utc_now()
+    [last_video] = videos_after_timestamp(videos, DateTime.add(now, -6 * 24 * 3600, :second))
+    last_video
   end
 
-  defp find_last_videos(videos, from_datetime) do
-    videos
-    |> Enum.map(fn item ->
-      %{
-        video_id: item["id"]["videoId"],
-        video_title: item["snippet"]["title"],
-        published_time: DateTime.from_iso8601(item["snippet"]["publishedAt"])
-      }
-    end)
-    |> Enum.filter(fn item ->
+  defp fetch_videos(channel_id) do
+    get!("/search",
+      query: [
+        channelId: channel_id,
+        order: "date",
+        type: "video",
+        part: "snippet"
+      ]
+    )
+  end
+
+  defp videos_after_timestamp(videos, from_datetime) do
+    Enum.filter(videos, fn item ->
       {:ok, video_published_time, 0} = item.published_time
       DateTime.compare(video_published_time, from_datetime) == :gt
     end)
   end
-
-  defp last_video([]), do: {:err, "No video published this week"}
-  defp last_video([video]), do: {:ok, video}
-
-  defp last_video(videos),
-    do: {:err, "Found multiple videos published last week, got #{length(videos)} videos", videos}
 
   def get_video_info(video_id) do
     %{status: 200, body: body} =
