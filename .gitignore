@@ -28,3 +28,4 @@ roule_avec_spot-*.tar
 *.secrets.*
 
 lib/raw
+lib/mix/last_video.ex
