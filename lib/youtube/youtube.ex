@@ -7,6 +7,43 @@ defmodule Youtube do
   plug(Tesla.Middleware.BaseUrl, @base_url)
   plug(Youtube.OAuth.Middleware)
 
+  def get_channel_last_video(channel_id) do
+    %{status: 200, body: body} = fetch_videos(channel_id)
+    %{"items" => items} = body
+
+    videos =
+      Enum.map(items, fn item ->
+        %{
+          video_id: item["id"]["videoId"],
+          video_title: item["snippet"]["title"],
+          published_time: DateTime.from_iso8601(item["snippet"]["publishedAt"])
+        }
+      end)
+
+    # Only keep videos published the last 6 days
+    now = DateTime.utc_now()
+    [last_video] = videos_after_timestamp(videos, DateTime.add(now, -6 * 24 * 3600, :second))
+    last_video
+  end
+
+  defp fetch_videos(channel_id) do
+    get!("/search",
+      query: [
+        channelId: channel_id,
+        order: "date",
+        type: "video",
+        part: "snippet"
+      ]
+    )
+  end
+
+  defp videos_after_timestamp(videos, from_datetime) do
+    Enum.filter(videos, fn item ->
+      {:ok, video_published_time, 0} = item.published_time
+      DateTime.compare(video_published_time, from_datetime) == :gt
+    end)
+  end
+
   def get_video_info(video_id) do
     %{status: 200, body: body} =
       get!("/videos", query: [id: video_id, part: "snippet,contentDetails,statistics"])
