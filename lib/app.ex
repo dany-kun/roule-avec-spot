@@ -1,7 +1,8 @@
 defmodule App do
   @my_spotify_user_id Application.compile_env!(:roule_avec_spot, [Spotify, :user_id])
-  def create_playlist(video_id, playlist_name) do
-    details = get_track_uris(video_id)
+
+  def create_playlist(video_id, playlist_name \\ nil) do
+    details = get_video_info(video_id)
 
     uris =
       case details.uris do
@@ -14,7 +15,14 @@ defmodule App do
           |> Enum.map(fn e -> e[:uri] end)
       end
 
+    playlist_name = playlist_name || sanitize_video_title(details.title)
+
     create_playlist(playlist_name, uris, details)
+  end
+
+  defp sanitize_video_title(video_title) do
+    String.replace(video_title, ["Roule avec Driver", "spécial"], "")
+    |> String.replace(~r/\s+/, " ")
   end
 
   def create_playlist(playlist_name, uris, info) do
@@ -24,7 +32,7 @@ defmodule App do
     IO.puts("Created playlist #{playlist_name} : #{id}")
   end
 
-  def get_track_uris(video_id) do
+  def get_video_info(video_id) do
     %{description: tracks, link: link, title: title} = Youtube.get_video_info(video_id)
 
     uris =
