@@ -12,4 +12,4 @@ jobs:
           otp-version: '24'
           elixir-version: '1.13.4'
       - run: mix deps.get
-      - run: mix compile
+      - run: mix compile --warnings-as-errors
