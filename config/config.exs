@@ -1,3 +1,3 @@
 import Config
 
-import_config(".secrets.exs")
+import_config(".dev.secrets.exs")
