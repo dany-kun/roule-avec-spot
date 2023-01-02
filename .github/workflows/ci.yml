@@ -1,0 +1,25 @@
+on: push
+
+jobs:
+  analysis:
+    runs-on: ubuntu-latest
+    name: Static analysis
+    env:
+      MIX_ENV: prod
+      YOUTUBE_OAUTH_CLIENT_SECRET: "fake"
+      YOUTUBE_OAUTH_CLIENT_ID: "fake"
+      YOUTUBE_OAUTH_CLIENT_REDIRECT_URI: "fake"
+      YOUTUBE_CHANNEL_ID: "fake"
+      SPOTIFY_OAUTH_CLIENT_SECRET: "fake"
+      SPOTIFY_OAUTH_CLIENT_ID: "fake"
+      SPOTIFY_OAUTH_CLIENT_REDIRECT_URI: "fake"
+      SPOTIFY_USER_ID: "fake"
+    steps:
+      - uses: actions/checkout@v2
+      - uses: erlef/setup-beam@v1
+        with:
+          otp-version: '25'
+          elixir-version: '1.14'
+      - run: mix deps.get
+      - run: mix compile --warnings-as-errors
+      - run: mix format --check-formatted
