@@ -1,11 +1,7 @@
 defmodule App do
   @my_spotify_user_id Application.compile_env!(:roule_avec_spot, [Spotify, :user_id])
 
-  def create_playlist(video_id) do
-    create_playlist(video_id, nil)
-  end
-
-  def create_playlist(video_id, playlist_name) do
+  def create_playlist(video_id, playlist_name \\ nil) do
     details = get_video_info(video_id)
 
     uris =
