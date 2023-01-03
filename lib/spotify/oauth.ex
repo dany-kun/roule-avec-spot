@@ -6,7 +6,7 @@ defmodule Spotify.OAuth do
   @app_client_id Application.compile_env!(:roule_avec_spot, [Spotify, :client_id])
   @app_client_secret Application.compile_env!(:roule_avec_spot, [Spotify, :client_secret])
   @scopes ["playlist-modify-public", "ugc-image-upload", "playlist-modify-private"]
-  @redirect_uri Application.compile_env!(:roule_avec_spot, [Spotify, :redirect_uri])
+  @redirect_uri Application.compile_env(:roule_avec_spot, [Spotify, :redirect_uri])
   @refresh_token Application.compile_env(:roule_avec_spot, [Spotify, :refresh_token])
 
   def access_token!() do

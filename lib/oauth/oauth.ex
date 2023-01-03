@@ -78,18 +78,3 @@ defmodule OAuth.Cache do
     Agent.update(__MODULE__, update_fn)
   end
 end
-
-defmodule OAuth.Cache.Application do
-  @moduledoc false
-
-  use Application
-
-  def start(_type, _args) do
-    children = [
-      {OAuth.Cache, %{}}
-    ]
-
-    opts = [strategy: :one_for_one, name: Bootstrap.Supervisor]
-    Supervisor.start_link(children, opts)
-  end
-end
