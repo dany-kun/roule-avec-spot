@@ -7,27 +7,26 @@ defmodule Spotify.OAuth do
   @app_client_secret Application.compile_env!(:roule_avec_spot, [Spotify, :client_secret])
   @scopes ["playlist-modify-public", "ugc-image-upload", "playlist-modify-private"]
   @redirect_uri Application.compile_env!(:roule_avec_spot, [Spotify, :redirect_uri])
+  @refresh_token Application.compile_env(:roule_avec_spot, [Spotify, :refresh_token])
 
-  def get_token() do
-    token = read_token()
-
-    cond do
-      token ->
-        token
-
-      true ->
-        token = OAuth.create_access_token!(Spotify.OAuth)
-        store_token(token)
-        token
-    end
+  def access_token!() do
+    OAuth.access_token!(Spotify.OAuth)
   end
 
-  defp read_token() do
-    Application.get_env(:roule_avec_spot, :spotify_access_token)
+  @impl OAuth
+  def get_refresh_token_from_env() do
+    @refresh_token
   end
 
-  defp store_token(token) do
-    Application.put_env(:roule_avec_spot, :spotify_access_token, token)
+  @impl OAuth
+  def refresh_access_token!(refresh_token) do
+    %{"access_token" => access_token} =
+      make_oauth_request(%{
+        "refresh_token" => refresh_token,
+        "grant_type" => "refresh_token"
+      })
+
+    %{access_token: access_token}
   end
 
   @impl OAuth
@@ -48,14 +47,14 @@ defmodule Spotify.OAuth do
 
   @impl OAuth
   def exchange_code!({:spotify, code}) do
-    %{"access_token" => token} =
+    %{"access_token" => access_token, "refresh_token" => refresh_token} =
       make_oauth_request(%{
         "code" => code,
         "grant_type" => "authorization_code",
         "redirect_uri" => @redirect_uri
       })
 
-    token
+    %{access_token: access_token, refresh_token: refresh_token}
   end
 
   defp make_oauth_request(request_params) do
@@ -83,7 +82,10 @@ defmodule Spotify.OAuth do
 
     def call(env, next, _) do
       env
-      |> Map.update!(:headers, &[{"Authorization", "Bearer #{Spotify.OAuth.get_token()}"} | &1])
+      |> Map.update!(
+        :headers,
+        &[{"Authorization", "Bearer #{Spotify.OAuth.access_token!()}"} | &1]
+      )
       |> Tesla.run(next)
     end
   end
