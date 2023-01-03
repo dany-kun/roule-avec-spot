@@ -1,0 +1,26 @@
+on: workflow_dispatch
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    name: Run
+    env:
+      MIX_ENV: prod
+      YOUTUBE_OAUTH_CLIENT_SECRET: ${{ secrets.YOUTUBE_OAUTH_CLIENT_SECRET}}
+      YOUTUBE_OAUTH_CLIENT_ID: ${{ secrets.YOUTUBE_OAUTH_CLIENT_ID}}
+      YOUTUBE_OAUTH_REFRESH_TOKEN: ${{ secrets.YOUTUBE_OAUTH_REFRESH_TOKEN }}
+      YOUTUBE_CHANNEL_ID: ${{ secrets.YOUTUBE_CHANNEL_ID}}
+      SPOTIFY_OAUTH_CLIENT_SECRET: ${{ secrets.SPOTIFY_OAUTH_CLIENT_SECRET}}
+      SPOTIFY_OAUTH_CLIENT_ID: ${{ secrets.SPOTIFY_OAUTH_CLIENT_ID}}
+      SPOTIFY_OAUTH_REFRESH_TOKEN: ${{ secrets.SPOTIFY_OAUTH_REFRESH_TOKEN }}
+      SPOTIFY_USER_ID: ${{ secrets.SPOTIFY_USER_ID}}
+      LINE_CHANNEL_TOKEN: ${{ secrets.LINE_CHANNEL_TOKEN}}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: erlef/setup-beam@v1
+        with:
+          otp-version: '25'
+          elixir-version: '1.14'
+      - run: mix deps.get
+      - run: mix release
+      - run: _build/prod/rel/roule_avec_spot/bin/roule_avec_spot start
