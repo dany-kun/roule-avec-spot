@@ -15,7 +15,7 @@ defmodule RouleAvecSpot.MixProject do
   def application do
     [
       extra_applications: [:logger],
-      mod: {OAuth.Cache.Application, []}
+      mod: {App, []}
     ]
   end
 

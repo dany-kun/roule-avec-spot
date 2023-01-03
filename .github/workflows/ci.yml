@@ -8,11 +8,9 @@ jobs:
       MIX_ENV: prod
       YOUTUBE_OAUTH_CLIENT_SECRET: "fake"
       YOUTUBE_OAUTH_CLIENT_ID: "fake"
-      YOUTUBE_OAUTH_CLIENT_REDIRECT_URI: "fake"
       YOUTUBE_CHANNEL_ID: "fake"
       SPOTIFY_OAUTH_CLIENT_SECRET: "fake"
       SPOTIFY_OAUTH_CLIENT_ID: "fake"
-      SPOTIFY_OAUTH_CLIENT_REDIRECT_URI: "fake"
       SPOTIFY_USER_ID: "fake"
       LINE_CHANNEL_TOKEN: "fake"
     steps:

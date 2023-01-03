@@ -5,7 +5,7 @@ defmodule Youtube.OAuth do
   @base_url "https://accounts.google.com/o/oauth2/v2/auth"
   @client_id Application.compile_env!(:roule_avec_spot, [Youtube, :client_id])
   @client_secret Application.compile_env!(:roule_avec_spot, [Youtube, :client_secret])
-  @redirect_uri Application.compile_env!(:roule_avec_spot, [Youtube, :redirect_uri])
+  @redirect_uri Application.compile_env(:roule_avec_spot, [Youtube, :redirect_uri])
   @refresh_token Application.compile_env(:roule_avec_spot, [Youtube, :refresh_token])
 
   def access_token!() do
