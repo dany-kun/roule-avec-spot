@@ -14,6 +14,7 @@ jobs:
       SPOTIFY_OAUTH_CLIENT_ID: "fake"
       SPOTIFY_OAUTH_CLIENT_REDIRECT_URI: "fake"
       SPOTIFY_USER_ID: "fake"
+      LINE_CHANNEL_TOKEN: "fake"
     steps:
       - uses: actions/checkout@v2
       - uses: erlef/setup-beam@v1
