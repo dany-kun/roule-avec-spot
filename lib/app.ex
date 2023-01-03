@@ -7,6 +7,7 @@ defmodule App do
 
   def create_playlist(channel_id) do
     video = Youtube.get_channel_last_video(channel_id)
+    Line.send_text_message("A new video was published #{video.video_title}")
     create_playlist_from_video(video.video_id)
   end
 
@@ -39,6 +40,7 @@ defmodule App do
     # TODO: store in DB
     Spotify.update_playlist_tracks(id, uris)
     IO.puts("Created playlist #{playlist_name} : #{id}")
+    Line.send_text_message("A new playlist was created #{playlist_name}")
   end
 
   def get_video_info(video_id) do
