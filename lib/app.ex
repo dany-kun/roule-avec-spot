@@ -8,6 +8,5 @@ defmodule App do
 
     opts = [strategy: :one_for_one, name: Bootstrap.Supervisor]
     Supervisor.start_link(children, opts)
-    Core.create_playlist()
   end
 end
