@@ -4,6 +4,7 @@ jobs:
   run:
     runs-on: ubuntu-latest
     name: Run
+    timeout-minutes: 10
     env:
       MIX_ENV: prod
       YOUTUBE_OAUTH_CLIENT_SECRET: ${{ secrets.YOUTUBE_OAUTH_CLIENT_SECRET}}
