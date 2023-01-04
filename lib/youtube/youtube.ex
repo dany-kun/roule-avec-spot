@@ -32,7 +32,7 @@ defmodule Youtube do
         {:ok, %{video: last_video}}
 
       [_last_video | _] ->
-        {:error, %{multiple_videos: Enum.map(last_videos, fn v -> v.video_title end)}}
+        {:error, %{multiple_videos: last_videos}}
     end
   end
 

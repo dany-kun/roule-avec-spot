@@ -14,8 +14,10 @@ defmodule Core do
       {:error, :no_video} ->
         Line.send_text_message("No video was published")
 
-      {:error, %{multiple_videos: video_titles}} ->
-        Line.send_text_message("Several videos were published #{Enum.join(video_titles, ",")}")
+      {:error, %{multiple_videos: videos}} ->
+        videos = Enum.map_join(videos, ", ", fn v -> v.video_title end)
+
+        Line.send_text_message("Several videos were published #{videos}")
     end
   end
 
