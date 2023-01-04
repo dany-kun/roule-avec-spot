@@ -7,8 +7,18 @@ defmodule Core do
 
   def create_playlist(channel_id) do
     video = Youtube.get_channel_last_video(channel_id)
-    Line.send_text_message("A new video was published #{video.video_title}")
-    create_playlist_from_video(video.video_id)
+
+    case video do
+      {:ok, %{video: video}} ->
+        Line.send_text_message("A new video was published #{video.video_title}")
+        create_playlist_from_video(video.video_id)
+
+      {:ok, :no_video} ->
+        Line.send_text_message("No video was published")
+
+      {:err, %{multiple_videos: video_titles}} ->
+        Line.send_text_message("Several videos were published #{video_titles}")
+    end
   end
 
   def create_playlist_from_video(video_id, playlist_name \\ nil) do
