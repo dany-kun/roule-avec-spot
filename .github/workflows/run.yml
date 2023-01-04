@@ -1,4 +1,8 @@
-on: workflow_dispatch
+on: 
+  workflow_dispatch:
+  schedule:
+    - cron: "0 20 * * 4" # Every Thursday at 20:00 UTC
+
 
 jobs:
   run:
@@ -24,4 +28,4 @@ jobs:
           elixir-version: '1.14'
       - run: mix deps.get
       - run: mix release
-      - run: _build/prod/rel/roule_avec_spot/bin/roule_avec_spot start
+      - run: mix playlist
