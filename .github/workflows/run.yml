@@ -27,5 +27,4 @@ jobs:
           otp-version: '25'
           elixir-version: '1.14'
       - run: mix deps.get
-      - run: mix release
       - run: mix playlist
