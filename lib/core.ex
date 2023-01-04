@@ -6,9 +6,19 @@ defmodule Core do
   def create_playlist(), do: create_playlist(@channel_id)
 
   def create_playlist(channel_id) do
-    video = Youtube.get_channel_last_video(channel_id)
-    Line.send_text_message("A new video was published #{video.video_title}")
-    create_playlist_from_video(video.video_id)
+    case Youtube.get_channel_last_video(channel_id) do
+      {:ok, %{video: video}} ->
+        Line.send_text_message("A new video was published #{video.video_title}")
+        create_playlist_from_video(video.video_id)
+
+      {:error, :no_video} ->
+        Line.send_text_message("No video was published")
+
+      {:error, %{multiple_videos: videos}} ->
+        videos = Enum.map_join(videos, ", ", fn v -> v.video_title end)
+
+        Line.send_text_message("Several videos were published #{videos}")
+    end
   end
 
   def create_playlist_from_video(video_id, playlist_name \\ nil) do

@@ -22,8 +22,18 @@ defmodule Youtube do
 
     # Only keep videos published the last 6 days
     now = DateTime.utc_now()
-    [last_video] = videos_after_timestamp(videos, DateTime.add(now, -6 * 24 * 3600, :second))
-    last_video
+    last_videos = videos_after_timestamp(videos, DateTime.add(now, -6 * 24 * 3600, :second))
+
+    case last_videos do
+      [] ->
+        {:error, :no_video}
+
+      [last_video] ->
+        {:ok, %{video: last_video}}
+
+      [_last_video | _] ->
+        {:error, %{multiple_videos: last_videos}}
+    end
   end
 
   defp fetch_videos(channel_id) do
