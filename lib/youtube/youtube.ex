@@ -26,13 +26,13 @@ defmodule Youtube do
 
     case last_videos do
       [] ->
-        {:ok, :no_video}
+        {:error, :no_video}
 
       [last_video] ->
         {:ok, %{video: last_video}}
 
       [_last_video | _] ->
-        {:err, %{multiple_videos: Enum.map(last_videos, fn v -> v.video_title end)}}
+        {:error, %{multiple_videos: Enum.map(last_videos, fn v -> v.video_title end)}}
     end
   end
 
