@@ -8,7 +8,7 @@ defmodule Core do
   def create_playlist(channel_id) do
     video = Youtube.get_channel_last_video(channel_id)
 
-    case video do
+    case Youtube.get_channel_last_video(channel_id) do
       {:ok, %{video: video}} ->
         Line.send_text_message("A new video was published #{video.video_title}")
         create_playlist_from_video(video.video_id)
