@@ -1,7 +1,8 @@
-defmodule App do
-  use Application
+defmodule Mix.Tasks.Playlist do
+  use Mix.Task
 
-  def start(_type, _args) do
+  @shortdoc "Create playlist from channel last video"
+  def run(_) do
     children = [
       {OAuth.Cache, %{}}
     ]
