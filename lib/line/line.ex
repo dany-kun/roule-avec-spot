@@ -18,5 +18,7 @@ defmodule Line do
           }
         ]
       })
+
+    :ok
   end
 end
