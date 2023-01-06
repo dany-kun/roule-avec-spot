@@ -29,3 +29,4 @@ roule_avec_spot-*.tar
 
 lib/raw
 lib/mix/last_video.ex
+lib/mix/tasks/pull.ex
