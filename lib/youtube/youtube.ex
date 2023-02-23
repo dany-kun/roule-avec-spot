@@ -7,7 +7,7 @@ defmodule Youtube do
   plug(Tesla.Middleware.BaseUrl, @base_url)
   plug(Youtube.OAuth.Middleware)
 
-  def get_channel_last_video(channel_id) do
+  def get_channel_last_videos(channel_id) do
     %{status: 200, body: body} = fetch_videos(channel_id)
     %{"items" => items} = body
 
@@ -32,7 +32,7 @@ defmodule Youtube do
         {:ok, %{video: last_video}}
 
       [_last_video | _] ->
-        {:error, %{multiple_videos: last_videos}}
+        {:ok, %{multiple_videos: last_videos}}
     end
   end
 

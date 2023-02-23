@@ -6,20 +6,33 @@ defmodule Core do
   def create_playlist(), do: create_playlist(@channel_id)
 
   def create_playlist(channel_id) do
-    case Youtube.get_channel_last_video(channel_id) do
+    case Youtube.get_channel_last_videos(channel_id) do
       {:ok, %{video: video}} ->
         Line.send_text_message("A new video was published #{video.video_title}")
-        create_playlist_from_video(video.video_id)
+        create_roule_avec_driver_playlist(video)
 
       {:error, :no_video} ->
         Line.send_text_message("No video was published")
 
-      {:error, %{multiple_videos: videos}} ->
-        videos = Enum.map_join(videos, ", ", fn v -> v.video_title end)
+      {:ok, %{multiple_videos: videos}} ->
+        video_titles = Enum.map_join(videos, ", ", fn v -> v.video_title end)
 
-        Line.send_text_message("Several videos were published #{videos}")
+        Line.send_text_message("Several videos were published #{video_titles}")
+        create_roule_avec_driver_playlist(videos)
     end
   end
+
+  defp create_roule_avec_driver_playlist(videos) when is_list(videos) do
+    video = Enum.find(videos, fn v -> String.contains?(v.video_title, "Roule avec Driver") end)
+
+    if video do
+      create_playlist_from_video(video.video_id)
+    else
+      Line.send_text_message("No Roule avec Driver video")
+    end
+  end
+
+  defp create_roule_avec_driver_playlist(video), do: create_roule_avec_driver_playlist([video])
 
   def create_playlist_from_video(video_id, playlist_name \\ nil) do
     details = get_video_info(video_id)
