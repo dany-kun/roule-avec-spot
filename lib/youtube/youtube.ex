@@ -74,8 +74,8 @@ defmodule Youtube do
     group
     |> String.split("\n")
     |> Stream.with_index()
-    |> Enum.filter(fn {e, i} -> String.match?(e, ~r/#{i + 1}(-|.)/) end)
-    |> Enum.map(fn {e, i} -> String.replace(e, ~r/#{i + 1}(-|.)/, "") end)
+    |> Enum.filter(fn {e, i} -> String.match?(e, ~r/[#{i + 1}|•](-|.)/) end)
+    |> Enum.map(fn {e, i} -> String.replace(e, ~r/[#{i + 1}|•](-|.)/, "") end)
     |> Enum.map(fn e -> String.trim(e) end)
     |> Enum.filter(fn s -> s != "" end)
   end
