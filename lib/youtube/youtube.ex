@@ -68,7 +68,7 @@ defmodule Youtube do
     }
   end
 
-  def parse_description(description) do
+  defp parse_description(description) do
     [group | _] = Regex.run(~r/.*([1|•][-|.•\s?](?:.|\n)*)/, description)
 
     group
