@@ -25,7 +25,7 @@ defmodule Core do
   defp create_roule_avec_driver_playlist(videos) when is_list(videos) do
     video =
       Enum.find(videos, fn v ->
-        String.contains?(String.downcase(v.video_title), "Roule avec Driver")
+        String.contains?(String.downcase(v.video_title), "roule avec driver")
       end)
 
     if video do
